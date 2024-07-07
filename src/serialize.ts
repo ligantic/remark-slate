@@ -96,7 +96,7 @@ export default function serialize(
             )
               ? listDepth + 1
               : listDepth,
-            childIndex: index
+            childIndex: index,
           }
         );
       })
@@ -185,9 +185,6 @@ export default function serialize(
 
     case nodeTypes.listItem:
       const isOL = chunk && chunk.parentType === nodeTypes.ol_list;
-      const treatAsLeaf =
-        (chunk as BlockType).children.length === 1 &&
-        isLeafNode((chunk as BlockType).children[0]);
 
       let spacer = '';
       for (let k = 0; listDepth > k; k++) {
@@ -198,10 +195,8 @@ export default function serialize(
           spacer += '  ';
         }
       }
-      const prefix = `${spacer}${isOL ? `${childIndex + 1}.` : '-'}`
-      return `${prefix} ${children}${
-        treatAsLeaf ? '\n' : ''
-      }`;
+      const prefix = `${spacer}${isOL ? `${childIndex + 1}.` : '-'}`;
+      return `${prefix} ${children}\n`;
 
     case nodeTypes.paragraph:
       return `${children}\n`;
