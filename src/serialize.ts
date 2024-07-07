@@ -4,6 +4,7 @@ import escapeHtml from 'escape-html';
 interface Options {
   nodeTypes: NodeTypes;
   listDepth?: number;
+  childIndex?: number;
   ignoreParagraphNewline?: boolean;
 }
 
@@ -23,6 +24,7 @@ export default function serialize(
     nodeTypes: userNodeTypes = defaultNodeTypes,
     ignoreParagraphNewline = false,
     listDepth = 0,
+    childIndex = 0,
   } = opts;
 
   let text = (chunk as LeafType).text || '';
@@ -43,7 +45,7 @@ export default function serialize(
 
   if (!isLeafNode(chunk)) {
     children = chunk.children
-      .map((c: BlockType | LeafType) => {
+      .map((c: BlockType | LeafType, index) => {
         const isList = !isLeafNode(c)
           ? (LIST_TYPES as string[]).includes(c.type || '')
           : false;
@@ -94,6 +96,7 @@ export default function serialize(
             )
               ? listDepth + 1
               : listDepth,
+            childIndex: index
           }
         );
       })
@@ -195,7 +198,8 @@ export default function serialize(
           spacer += '  ';
         }
       }
-      return `${spacer}${isOL ? '1.' : '-'} ${children}${
+      const prefix = `${spacer}${isOL ? `${childIndex + 1}.` : '-'}`
+      return `${prefix} ${children}${
         treatAsLeaf ? '\n' : ''
       }`;
 
